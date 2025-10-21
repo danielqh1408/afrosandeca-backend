@@ -2,7 +2,28 @@ import path from 'path';
 import { env } from '@strapi/utils';
 
 export default ({ env }) => {
-  const client = env('DATABASE_CLIENT', 'sqlite');
+  const client = env('DATABASE_CLIENT', 'postgres');
+  
+  if (client === 'postgres') {
+    const connection = env.url('DATABASE_URL');
+    
+    if (!connection) { 
+      return {
+        connection: { filename: path.join(__dirname, '..', '..', env('DATABASE_FILENAME', '.tmp/data.db')) },
+      }
+    }
+    
+    return {
+      connection: {
+        client: 'postgres',
+        connection: {
+          connectionString: connection,
+          ssl: env.bool('DATABASE_SSL', true) ? { rejectUnauthorized: false } : false, 
+        },
+        pool: {min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10)},
+      },
+    };
+  }
 
   const connections = {
     mysql: {
