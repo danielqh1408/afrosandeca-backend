@@ -5,7 +5,14 @@ export default ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS'),
   },
-  proxy: true,
+  proxy: {
+    enabled: true,
+    headers: [
+      'X-Forwarded-Host',
+      'X-Forwarded-Proto',
+      'X-Forwarded-For',
+    ],
+  },
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
